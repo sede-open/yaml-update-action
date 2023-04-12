@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: wbsds-application
+images:
+- name: geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-frontend
+  newName: geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-frontend
+  newTag: fe8a7fcde8de92d4b7f1e48f41f26cf292d96515
+- name: geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-backend
+  newName: geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-backend
+  newTag: fe8a7fcde8de92d4b7f1e48f41f26cf292d96515
+
+resources:
+- ../base
+
+patchesJson6902:
+- path: ingress_patch.yaml
+  target:
+    group: networking.k8s.io
+    kind: Ingress
+    name: application-ingress
+    version: v1
+
+- path: deployment_patch.yaml
+  target:
+    group: apps
+    kind: Deployment
+    name: application-deployment-frontend
+    version: v1
+
+- path: deployment_patch.yaml
+  target:
+    group: apps
+    kind: Deployment
+    name: application-deployment-backend
+    version: v1
