@@ -93,7 +93,7 @@ jobs:
         run: |
           cat sample_tests/tf_workspace.yaml
           cat sample_tests/wbsds_app_kustomization.yaml
-      - name: Update yaml file
+      - name: Update workspace yaml file
         uses: ./
         with:
           valueFile: 'sample_tests/tf_workspace.yaml'
@@ -102,19 +102,49 @@ jobs:
           updateFile: 'true'
           changes: |
             {
+              "spec.forProvider.planArgs[2]": "-var semantic-version=v1.0.1-test",
+              "spec.forProvider.applyArgs[2]": "-var semantic-version=v1.0.1-test",
+              "spec.forProvider.destroyArgs[2]": "-var semantic-version=v1.0.1-test"
+            }
+      - name: Update kustomization yaml file
+        uses: ./
+        with:
+          valueFile: 'sample_tests/wbsds_app_kustomization.yaml'
+          masterBranchName: main
+          commitChange: 'false'
+          updateFile: 'true'
+          changes: |
+            {
+              "images[0].newTag": "xyz123",
+              "images[1].newTag": "abc456"
+            }
+      - name: Cat Updated yaml file
+        run: |
+          cat sample_tests/tf_workspace.yaml
+          cat sample_tests/wbsds_app_kustomization.yaml
+  
+  test-multiple-file-changes-custom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cat Original yaml file
+        run: |
+          cat sample_tests/tf_workspace.yaml
+          cat sample_tests/wbsds_app_kustomization.yaml
+      - uses: ./
+        with:
+          masterBranchName: main
+          commitChange: 'false'
+          updateFile: 'true'
+          changes: |
+            {
               "sample_tests/tf_workspace.yaml": {
-                "spec.forProvider.planArgs[2]": "-var semantic-version=v1.0.1-test"
-              },
-              "sample_tests/tf_workspace.yaml": {
-                "spec.forProvider.applyArgs[2]": "-var semantic-version=v1.0.1-test"
-              },
-              "sample_tests/tf_workspace.yaml": {
+                "spec.forProvider.planArgs[2]": "-var semantic-version=v1.0.1-test",
+                "spec.forProvider.applyArgs[2]": "-var semantic-version=v1.0.1-test",
                 "spec.forProvider.destroyArgs[2]": "-var semantic-version=v1.0.1-test"
               },
               "sample_tests/wbsds_app_kustomization.yaml": {
-                "images[0].newTag": "xyz123"
-              }
-              "sample_tests/wbsds_app_kustomization.yaml": {
+                "images[0].newTag": "xyz123",
                 "images[1].newTag": "abc456"
               }
             }
@@ -122,39 +152,24 @@ jobs:
         run: |
           cat sample_tests/tf_workspace.yaml
           cat sample_tests/wbsds_app_kustomization.yaml
-  
-#  test-multiple-file-changes:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: ./
-#        with:
-#          branch: deployment/test-multi-file-update
-#          masterBranchName: main
-#          createPR: 'false'
-#          targetBranch: main
-#          description: Test GitHub Action
-#          message: 'Update All Images'
-#          title: 'Version Updates on all Environments'
-#          changes: |
-#            {
-#              "__tests__/fixtures/values.json": {
-#                "backend.version": "v1.0.1",
-#                "frontend": true
-#              },
-#              "__tests__/fixtures/values.dev.yaml": {
-#                "backend.version": "v1.0.1",
-#                "frontend": true
-#              },
-#              "__tests__/fixtures/values.stage.yaml": {
-#                "backend.version": "v1.0.1",
-#                "frontend": true
-#              },
-#              "__tests__/fixtures/values.prod.yaml": {
-#                "backend.version": "v1.0.1",
-#                "frontend": true
-#              }
-#            }
+
+  test-update-file-wildcard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cat Original yaml file
+        run: cat sample_tests/tf_workspace.yaml
+      - name: Update yaml file
+        uses: ./
+        with:
+          valueFile: 'sample_tests/tf_workspace.yaml'
+          propertyPath: 'spec.forProvider.*Args[2]'
+          value: "-var s3_object_version=v1.0.1-test"
+          masterBranchName: main
+          commitChange: 'false'
+          updateFile: 'true'
+      - name: Cat Updated yaml file
+        run: cat sample_tests/tf_workspace.yaml
 #  test-value-types:
 #    runs-on: ubuntu-latest
 #    steps:
