@@ -163,8 +163,8 @@ jobs:
         uses: ./
         with:
           valueFile: 'sample_tests/tf_workspace.yaml'
-          propertyPath: 'spec.forProvider.*Args[2]'
-          value: "-var s3_object_version=v1.0.1-test"
+          propertyPath: 'spec.forProvider[*][?(@.match(/s3_object_version/))]'
+          value: "-var semantic_version=v1.0.1-test"
           masterBranchName: main
           commitChange: 'false'
           updateFile: 'true'
@@ -197,6 +197,37 @@ jobs:
       - name: Cat Updated yaml file
         run: |
           cat sample_tests/tf_workspace_2.yaml
+          cat sample_tests/wbsds_app_kustomization.yaml
+
+  # "spec.forProvider[*][?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test"
+  test-multiple-file-changes-wildcard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cat Original yaml file
+        run: |
+          cat sample_tests/tf_workspace.yaml
+          cat sample_tests/wbsds_app_kustomization.yaml
+      - uses: ./
+        with:
+          masterBranchName: main
+          commitChange: 'false'
+          updateFile: 'true'
+          changes: |
+            {
+              "sample_tests/tf_workspace.yaml": {
+                "spec.forProvider.planArgs[?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test",
+                "spec.forProvider.applyArgs[?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test",
+                "spec.forProvider.destroyArgs[?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test"
+              },
+              "sample_tests/wbsds_app_kustomization.yaml": {
+                "images[?(@.name.match(/wbsds-application-frontend/))].newTag": "xyz123",
+                "images[?(@.name.match(/wbsds-application-backend/))].newTag": "abc456"
+              }
+            }
+      - name: Cat Updated yaml file
+        run: |
+          cat sample_tests/tf_workspace.yaml
           cat sample_tests/wbsds_app_kustomization.yaml
 #  test-value-types:
 #    runs-on: ubuntu-latest
