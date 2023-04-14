@@ -170,6 +170,34 @@ jobs:
           updateFile: 'true'
       - name: Cat Updated yaml file
         run: cat sample_tests/tf_workspace.yaml
+
+  tf-workspace2-test-multiple-file-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cat Original yaml file
+        run: |
+          cat sample_tests/tf_workspace_2.yaml
+          cat sample_tests/wbsds_app_kustomization.yaml
+      - uses: ./
+        with:
+          masterBranchName: main
+          commitChange: 'false'
+          updateFile: 'true'
+          changes: |
+            {
+              "sample_tests/tf_workspace_2.yaml": {
+                "spec.forProvider.vars[?(@.key == 'semantic_version')].value": "v1.0.1-test"
+              },
+              "sample_tests/wbsds_app_kustomization.yaml": {
+                "images[0].newTag": "xyz123",
+                "images[1].newTag": "abc456"
+              }
+            }
+      - name: Cat Updated yaml file
+        run: |
+          cat sample_tests/tf_workspace_2.yaml
+          cat sample_tests/wbsds_app_kustomization.yaml
 #  test-value-types:
 #    runs-on: ubuntu-latest
 #    steps:

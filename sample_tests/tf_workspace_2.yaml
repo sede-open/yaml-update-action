@@ -1,0 +1,33 @@
+---
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: wbsds-application-infra
+  annotations:
+    crossplane.io/external-name: wbsds-application-infra
+spec:
+  forProvider:
+    source: Remote
+    module: git::https://github.com/sede-x/geosigns-si-wbsds-data-processing-pipeline?ref=spike/496110
+    vars:
+      - key: semantic_version
+        value: v0.0.1
+      - key: environment
+        value: prod
+    varFiles:
+      - format: JSON
+        source: dev.tfvars.json
+    planArgs:
+#      - -var-file=dev.tfvars.json
+      - -target=test_crossplane_lambdas
+#      - -var s3_object_version=2rQVtHAt0MrQG_0W5TZGYCkYDuPYspzf
+    applyArgs:
+#      - -var-file=dev.tfvars.json
+      - -target=test_crossplane_lambdas
+#      - -var s3_object_version=2rQVtHAt0MrQG_0W5TZGYCkYDuPYspzf
+    destroyArgs:
+#      - -var-file=dev.tfvars.json
+      - -target=test_crossplane_lambdas
+#      - -var s3_object_version=2rQVtHAt0MrQG_0W5TZGYCkYDuPYspzf
+  providerConfigRef:
+    name: terraform-provider-config-irsa
