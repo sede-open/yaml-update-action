@@ -5,68 +5,6 @@ on:
       - spike/test-action
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - run: |
-#          npm install
-#      - run: |
-#          npm run all
-#  test:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: ./
-#        with:
-#          valueFile: 'sample_tests/tf_workspace.yaml'
-#          propertyPath: 'spec.forProvider.*Args[*s3_object_version*]'
-#          masterBranchName: main
-#          value: v1.0.1-test
-#          branch: feature/codeql_scanning
-#          targetBranch: main
-#          createPR: 'false'
-#          commitChange: 'false'
-#          message: 'Update s3_object_version'
-#          token: ${{ secrets.GH_TOKEN }}
-
-#  test-no-changes-did-not-fail:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: ./
-#        with:
-#          valueFile: '__tests__/fixtures/values.yaml'
-#          propertyPath: 'backend.version'
-#          masterBranchName: main
-#          value: v1.2.0
-#          branch: deployment/v1.2.0
-#          targetBranch: main
-#          createPR: 'false'
-#          message: 'Update Image Version to v1.2.0'
-#          token: ${{ secrets.GH_TOKEN }}
-#
-#
-#  test-target-repository:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          path: infrastructure
-#      - name: Update values.yaml
-#        uses: ./infrastructure
-#        with:
-#          valueFile: '__tests__/fixtures/values.yaml'
-#          propertyPath: 'backend.version'
-#          value: v1.2.1
-#          masterBranchName: main
-#          branch: deployment/v1.2.1
-#          targetBranch: main
-#          createPR: 'false'
-#          message: 'Update Image Version to v1.2.1'
-#          workDir: infrastructure
-#          token: ${{ secrets.GH_TOKEN }}
-
   test-update-file:
     runs-on: ubuntu-latest
     steps:
@@ -171,6 +109,51 @@ jobs:
       - name: Cat Updated yaml file
         run: cat sample_tests/tf_workspace.yaml
 
+  test-update-file-wildcard-2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cat Original yaml file
+        run: cat sample_tests/tf_workspace.yaml
+      - name: Update yaml file
+        uses: ./
+        with:
+          valueFile: 'sample_tests/tf_workspace.yaml'
+          masterBranchName: main
+          commitChange: 'false'
+          updateFile: 'true'
+          changes: |
+            {
+              "spec.forProvider.planArgs[?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test",
+              "spec.forProvider.applyArgs[?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test",
+              "spec.forProvider.destroyArgs[?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test"
+            }
+      - name: Cat Updated yaml file
+        run: cat sample_tests/tf_workspace.yaml
+
+  test-update-file-wildcard-3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cat Original yaml file
+        run: cat sample_tests/wbsds_app_kustomization.yaml
+      - name: Update yaml file
+        uses: ./
+        with:
+          valueFile: 'sample_tests/wbsds_app_kustomization.yaml'
+          masterBranchName: main
+          commitChange: 'false'
+          updateFile: 'true'
+          changes: |
+            {
+              "images[?(@.name.match(/wbsds-application-frontend/))].newName": "geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-frontend",
+              "images[?(@.name.match(/wbsds-application-frontend/))].newTag": "xyz123",
+              "images[?(@.name.match(/wbsds-application-backend/))].newName": "geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-backend",
+              "images[?(@.name.match(/wbsds-application-backend/))].newTag": "abc456"
+            }
+      - name: Cat Updated yaml file
+        run: cat sample_tests/wbsds_app_kustomization.yaml
+
   tf-workspace2-test-multiple-file-changes:
     runs-on: ubuntu-latest
     steps:
@@ -221,7 +204,9 @@ jobs:
                 "spec.forProvider.destroyArgs[?(@.match(/s3_object_version/))]": "-var semantic_version=v1.0.1-test"
               },
               "sample_tests/wbsds_app_kustomization.yaml": {
+                "images[?(@.name.match(/wbsds-application-frontend/))].newName": "geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-frontend",
                 "images[?(@.name.match(/wbsds-application-frontend/))].newTag": "xyz123",
+                "images[?(@.name.match(/wbsds-application-backend/))].newName": "geosigns-si-docker.artifactory.geosigns.shell.com/wbsds-application-backend",
                 "images[?(@.name.match(/wbsds-application-backend/))].newTag": "abc456"
               }
             }
@@ -229,34 +214,6 @@ jobs:
         run: |
           cat sample_tests/tf_workspace.yaml
           cat sample_tests/wbsds_app_kustomization.yaml
-#  test-value-types:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: ./
-#        with:
-#          valueFile: '__tests__/fixtures/values.yaml'
-#          propertyPath: 'config.prod'
-#          value: "!!bool 'true'"
-#          branch: deployment/test-bool-value
-#          masterBranchName: main
-#          targetBranch: main
-#          description: Test GitHub Action
-#          message: 'Update Config'
-#          title: 'Bool Update on all Environments'
-#          token: ${{ secrets.GH_TOKEN }}
-#      - uses: ./
-#        with:
-#          valueFile: '__tests__/fixtures/values.yaml'
-#          propertyPath: 'config.version'
-#          value: "!!int '1234'"
-#          branch: deployment/test-int-value
-#          masterBranchName: main
-#          targetBranch: main
-#          description: Test GitHub Action
-#          message: 'Update Config'
-#          title: 'Int Update on all Environments'
-#          token: ${{ secrets.GH_TOKEN }}
 
 #  cleanup:
 #    runs-on: ubuntu-latest
