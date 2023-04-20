@@ -47,7 +47,8 @@ const JSONParser = {
     }
   },
   dump<T extends ContentNode>(content: T): string {
-    return JSON.stringify(content, null, 2)
+    const spaceConstant = 2
+    return JSON.stringify(content, null, spaceConstant)
   }
 }
 
