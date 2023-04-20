@@ -2,9 +2,10 @@ import {Octokit} from '@octokit/rest'
 import {Actions} from './github-actions'
 import {Committer, ChangedFile} from './types'
 
+type GitCreateModeUnionType = '100644' | '100755' | '040000' | '160000' | '120000'
 export type GitCreateTreeParamsTree = {
   path?: string
-  mode?: '100644' | '100755' | '040000' | '160000' | '120000'
+  mode?: GitCreateModeUnionType
   type?: 'blob' | 'tree' | 'commit'
   sha?: string | null
   content?: string

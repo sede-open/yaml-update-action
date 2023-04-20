@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import * as core from '@actions/core'
+import {debug, info, warning, setOutput, setFailed}  from '@actions/core'
 
 export interface Actions {
   debug(message: string): void
@@ -11,23 +11,23 @@ export interface Actions {
 
 export class GitHubActions implements Actions {
   debug(message: string): void {
-    core.debug(message)
+    debug(message)
   }
 
   info(message: string): void {
-    core.info(message)
+    info(message)
   }
 
   warning(message: string): void {
-    core.warning(message)
+    warning(message)
   }
 
   setOutput(name: string, output: string): void {
-    core.setOutput(name, output)
+    setOutput(name, output)
   }
 
   setFailed(message: string): void {
-    core.setFailed(message)
+    setFailed(message)
   }
 }
 
@@ -54,14 +54,24 @@ export class LogActions implements Actions {
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class EmptyActions implements Actions {
-  debug(message: string): void {}
+  debug(_message: string): void {
+    // Empty
+  }
 
-  info(message: string): void {}
+  info(_message: string): void {
+    // Empty
+  }
 
-  warning(message: string): void {}
+  warning(_message: string): void {
+    // Empty
+  }
 
-  setOutput(name: string, output: string): void {}
+  setOutput(_name: string, _output: string): void {
+    // Empty
+  }
 
-  setFailed(message: string): void {}
+  setFailed(_message: string): void {
+    // Empty
+  }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
