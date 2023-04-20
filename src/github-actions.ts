@@ -54,14 +54,14 @@ export class LogActions implements Actions {
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class EmptyActions implements Actions {
-  debug(message: string): void {}
+  debug(_message: string): void {}
 
-  info(message: string): void {}
+  info(_message: string): void {}
 
-  warning(message: string): void {}
+  warning(_message: string): void {}
 
-  setOutput(name: string, output: string): void {}
+  setOutput(_name: string, _output: string): void {}
 
-  setFailed(message: string): void {}
+  setFailed(_message: string): void {}
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */

@@ -2,7 +2,8 @@ import YAML from 'js-yaml'
 import * as core from '@actions/core'
 import {Changes} from './types'
 
-export const convertValue = (value: string): string | number | boolean => {
+type ConvertValueUnionType = string | number | boolean
+export const convertValue = (value: string): ConvertValueUnionType => {
   if (!value.startsWith('!!')) {
     return value
   }
@@ -13,7 +14,9 @@ export const convertValue = (value: string): string | number | boolean => {
 }
 
 export const parseChanges = (changes: Changes, valueFile: string, changesString: string): Changes => {
-  if (!changesString) return changes
+  if (!changesString) {
+    return changes
+  }
 
   let input = null
   try {

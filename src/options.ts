@@ -93,7 +93,9 @@ export class GitHubOptions implements Options {
   }
 
   get labels(): string[] {
-    if (!core.getInput('labels')) return []
+    if (!core.getInput('labels')) {
+      return []
+    }
 
     return core
       .getInput('labels')
@@ -103,7 +105,9 @@ export class GitHubOptions implements Options {
   }
 
   get reviewers(): string[] {
-    if (!core.getInput('reviewers')) return []
+    if (!core.getInput('reviewers')) {
+      return []
+    }
 
     return core
       .getInput('reviewers')
@@ -113,7 +117,9 @@ export class GitHubOptions implements Options {
   }
 
   get teamReviewers(): string[] {
-    if (!core.getInput('teamReviewers')) return []
+    if (!core.getInput('teamReviewers')) {
+      return []
+    }
 
     return core
       .getInput('teamReviewers')
@@ -123,7 +129,9 @@ export class GitHubOptions implements Options {
   }
 
   get assignees(): string[] {
-    if (!core.getInput('assignees')) return []
+    if (!core.getInput('assignees')) {
+      return []
+    }
 
     return core
       .getInput('assignees')

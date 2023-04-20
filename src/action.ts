@@ -72,8 +72,9 @@ export async function runTest<T extends ContentNode>(options: Options): Promise<
   return files as (ChangedFile & {json: T})[]
 }
 
+type ReplaceValueUnionType = string | number | boolean | unknown[]
 export function replace<T extends ContentNode>(
-  value: string | number | boolean | unknown[],
+  value: ReplaceValueUnionType,
   jsonPath: string,
   content: ContentNode,
   method: Method
@@ -107,7 +108,9 @@ export function replace<T extends ContentNode>(
 
 export function writeTo(content: string, filePath: string, actions: Actions): void {
   fs.writeFile(filePath, content, err => {
-    if (!err) return
+    if (!err) {
+      return
+    }
 
     actions.warning(err.message)
   })
