@@ -1,5 +1,5 @@
-import * as core from '@actions/core'
-import * as process from 'process'
+import {getInput, getBooleanInput, warning, setFailed} from '@actions/core'
+import {env} from 'process'
 import {convertValue, parseChanges} from './helper'
 import {Committer, Changes, Method, Format} from './types'
 
@@ -33,125 +33,121 @@ export interface Options {
 
 export class GitHubOptions implements Options {
   get valueFile(): string {
-    return core.getInput('valueFile')
+    return getInput('valueFile')
   }
 
   get propertyPath(): string {
-    return core.getInput('propertyPath')
+    return getInput('propertyPath')
   }
 
   get value(): string {
-    return core.getInput('value')
+    return getInput('value')
   }
 
   get branch(): string {
-    return core.getInput('branch')
+    return getInput('branch')
   }
 
   get commitChange(): boolean {
-    return core.getBooleanInput('commitChange')
+    return getBooleanInput('commitChange')
   }
 
   get updateFile(): boolean {
-    return core.getBooleanInput('updateFile')
+    return getBooleanInput('updateFile')
   }
 
   get targetBranch(): string {
-    return core.getInput('targetBranch')
+    return getInput('targetBranch')
   }
 
   get repository(): string {
-    return core.getInput('repository')
+    return getInput('repository')
   }
 
   get githubAPI(): string {
-    return core.getInput('githubAPI')
+    return getInput('githubAPI')
   }
 
   get createPR(): boolean {
-    return core.getBooleanInput('createPR')
+    return getBooleanInput('createPR')
   }
 
   get noCompatMode(): boolean {
-    return core.getBooleanInput('noCompatMode')
+    return getBooleanInput('noCompatMode')
   }
 
   get token(): string {
-    return core.getInput('token')
+    return getInput('token')
   }
 
   get message(): string {
-    return core.getInput('message')
+    return getInput('message')
   }
 
   get title(): string {
-    return core.getInput('title')
+    return getInput('title')
   }
 
   get description(): string {
-    return core.getInput('description')
+    return getInput('description')
   }
 
   get labels(): string[] {
-    if (!core.getInput('labels')) {
+    if (!getInput('labels')) {
       return []
     }
 
-    return core
-      .getInput('labels')
+    return getInput('labels')
       .split(',')
       .map(label => label.trim())
       .filter(label => !!label)
   }
 
   get reviewers(): string[] {
-    if (!core.getInput('reviewers')) {
+    if (!getInput('reviewers')) {
       return []
     }
 
-    return core
-      .getInput('reviewers')
+    return getInput('reviewers')
       .split(',')
       .map(value => value.trim())
       .filter(value => !!value)
   }
 
   get teamReviewers(): string[] {
-    if (!core.getInput('teamReviewers')) {
+    if (!getInput('teamReviewers')) {
       return []
     }
 
-    return core
-      .getInput('teamReviewers')
+    return getInput('teamReviewers')
       .split(',')
       .map(value => value.trim())
       .filter(value => !!value)
   }
 
   get assignees(): string[] {
-    if (!core.getInput('assignees')) {
+    if (!getInput('assignees')) {
       return []
     }
 
-    return core
-      .getInput('assignees')
+    return getInput('assignees')
       .split(',')
       .map(value => value.trim())
       .filter(value => !!value)
   }
 
   get workDir(): string {
-    return core.getInput('workDir')
+    return getInput('workDir')
   }
 
   get masterBranchName(): string {
-    return core.getInput('masterBranchName')
+    return getInput('masterBranchName')
   }
 
   get committer(): Committer {
     return {
-      name: core.getInput('commitUserName'),
-      email: core.getInput('commitUserEmail')
+      name: getInput('commitUserName'),
+      email: getInput('commitUserEmail')
     }
   }
 
@@ -163,7 +159,7 @@ export class GitHubOptions implements Options {
       try {
         value = convertValue(value)
       } catch {
-        core.warning(`exception while trying to convert value '${this.value}'`)
+        warning(`exception while trying to convert value '${this.value}'`)
       }
 
       changes[this.valueFile] = {
@@ -171,16 +167,16 @@ export class GitHubOptions implements Options {
       }
     }
 
-    changes = parseChanges(changes, this.valueFile, core.getInput('changes'))
+    changes = parseChanges(changes, this.valueFile, getInput('changes'))
     if (Object.keys(changes).length === 0) {
-      core.setFailed('No changes to update detected')
+      setFailed('No changes to update detected')
     }
 
     return changes
   }
 
   get method(): Method {
-    const method = (core.getInput('method') || '').toLowerCase() as Method
+    const method = (getInput('method') || '').toLowerCase() as Method
 
     if ([Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)) {
       return method
@@ -190,7 +186,7 @@ export class GitHubOptions implements Options {
   }
 
   get format(): Format {
-    const format = (core.getInput('format') || '').toLowerCase() as Format
+    const format = (getInput('format') || '').toLowerCase() as Format
 
     if ([Format.YAML, Format.JSON, Format.UNKNOWN].includes(format)) {
       return format
@@ -202,105 +198,105 @@ export class GitHubOptions implements Options {
 
 export class EnvOptions implements Options {
   get valueFile(): string {
-    return process.env.VALUE_FILE || ''
+    return env.VALUE_FILE || ''
   }
 
   get propertyPath(): string {
-    return process.env.VALUE_PATH || ''
+    return env.VALUE_PATH || ''
   }
 
   get value(): string {
-    return process.env.VALUE || ''
+    return env.VALUE || ''
   }
 
   get branch(): string {
-    return process.env.BRANCH || ''
+    return env.BRANCH || ''
   }
 
   get masterBranchName(): string {
-    return process.env.MASTER_BRANCH_NAME || ''
+    return env.MASTER_BRANCH_NAME || ''
   }
 
   get commitChange(): boolean {
-    return process.env.COMMIT_CHANGE === 'true'
+    return env.COMMIT_CHANGE === 'true'
   }
 
   get updateFile(): boolean {
-    return process.env.UPDATE_FILE === 'true'
+    return env.UPDATE_FILE === 'true'
   }
 
   get targetBranch(): string {
-    return process.env.TARGET_BRANCH || ''
+    return env.TARGET_BRANCH || ''
   }
 
   get token(): string {
-    return process.env.TOKEN || ''
+    return env.TOKEN || ''
   }
 
   get createPR(): boolean {
-    return process.env.CREATE_PR === 'true'
+    return env.CREATE_PR === 'true'
   }
 
   get noCompatMode(): boolean {
-    return process.env.NO_COMPAT_MODE === 'true'
+    return env.NO_COMPAT_MODE === 'true'
   }
 
   get message(): string {
-    return process.env.MESSAGE || ''
+    return env.MESSAGE || ''
   }
 
   get title(): string {
-    return process.env.TITLE || ''
+    return env.TITLE || ''
   }
 
   get description(): string {
-    return process.env.DESCRIPTION || ''
+    return env.DESCRIPTION || ''
   }
 
   get labels(): string[] {
-    return (process.env.LABELS || '')
+    return (env.LABELS || '')
       .split(',')
       .map(label => label.trim())
       .filter(label => !!label)
   }
 
   get reviewers(): string[] {
-    return (process.env.REVIEWERS || '')
+    return (env.REVIEWERS || '')
       .split(',')
       .map(label => label.trim())
       .filter(label => !!label)
   }
 
   get teamReviewers(): string[] {
-    return (process.env.TEAM_REVIEWERS || '')
+    return (env.TEAM_REVIEWERS || '')
       .split(',')
       .map(label => label.trim())
       .filter(label => !!label)
   }
 
   get assignees(): string[] {
-    return (process.env.ASSIGNEES || '')
+    return (env.ASSIGNEES || '')
       .split(',')
       .map(label => label.trim())
       .filter(label => !!label)
   }
 
   get repository(): string {
-    return process.env.REPOSITORY || ''
+    return env.REPOSITORY || ''
   }
 
   get githubAPI(): string {
-    return process.env.GITHUB_API || 'https://api.github.com'
+    return env.GITHUB_API || 'https://api.github.com'
   }
 
   get workDir(): string {
-    return process.env.WORK_DIR || '.'
+    return env.WORK_DIR || '.'
   }
 
   get committer(): Committer {
     return {
-      name: process.env.COMMIT_USER_NAME || '',
-      email: process.env.COMMIT_USER_EMAIL || ''
+      name: env.COMMIT_USER_NAME || '',
+      email: env.COMMIT_USER_EMAIL || ''
     }
   }
 
@@ -312,7 +308,7 @@ export class EnvOptions implements Options {
       try {
         value = convertValue(value)
       } catch {
-        core.warning(`exception while trying to convert value '${this.value}'`)
+        warning(`exception while trying to convert value '${this.value}'`)
       }
 
       changes[this.valueFile] = {
@@ -320,21 +316,21 @@ export class EnvOptions implements Options {
       }
     }
 
-    return parseChanges(changes, this.valueFile, process.env.CHANGES || '')
+    return parseChanges(changes, this.valueFile, env.CHANGES || '')
   }
 
   get method(): Method {
-    const method = (process.env.METHOD || '').toLowerCase() as Method
+    const method = (env.METHOD || '').toLowerCase() as Method
 
     if ([Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)) {
-      return process.env.METHOD as Method
+      return env.METHOD as Method
     }
 
     return Method.CreateOrUpdate
   }
 
   get format(): Format {
-    const format = (process.env.FORMAT || '').toLowerCase() as Format
+    const format = (env.FORMAT || '').toLowerCase() as Format
 
     if ([Format.YAML, Format.JSON, Format.UNKNOWN].includes(format)) {
       return format

@@ -1,5 +1,5 @@
 import YAML from 'js-yaml'
-import * as core from '@actions/core'
+import {warning} from '@actions/core'
 import {Changes} from './types'
 
 type ConvertValueUnionType = string | number | boolean
@@ -22,7 +22,7 @@ export const parseChanges = (changes: Changes, valueFile: string, changesString:
   try {
     input = JSON.parse(changesString) || {}
   } catch {
-    core.warning(`failed to parse JSON: ${changesString}`)
+    warning(`failed to parse JSON: ${changesString}`)
     return changes
   }
 
