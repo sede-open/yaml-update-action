@@ -3,8 +3,9 @@ export type Committer = {
   email: string
 }
 
+type ContentNodeUnionType = string | number | boolean | ContentNode | ContentNode[]
 export type ContentNode = {
-  [key: string]: string | number | boolean | ContentNode | ContentNode[]
+  [key: string]: ContentNodeUnionType
 }
 
 export type ValueUpdates = {
