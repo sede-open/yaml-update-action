@@ -123,6 +123,7 @@ export const updateBranch = async (
   owner: string,
   repo: string,
   branch: string,
+  force: boolean,
   commitSha: string,
   actions: Actions
 ): Promise<void> => {
@@ -131,7 +132,8 @@ export const updateBranch = async (
       owner,
       repo,
       ref: `heads/${branch}`,
-      sha: commitSha
+      sha: commitSha,
+      force: force
     })
   } catch (error) {
     actions.info(`update branch ${branch} failed (${error}), fallback to create branch`)
