@@ -229,6 +229,10 @@ export class EnvOptions implements Options {
     return env.MASTER_BRANCH_NAME || ''
   }
 
+  get force(): boolean {
+    return process.env.FORCE === 'true'
+  }
+
   get commitChange(): boolean {
     return env.COMMIT_CHANGE === 'true'
   }
