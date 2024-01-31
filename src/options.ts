@@ -51,7 +51,7 @@ export class GitHubOptions implements Options {
   }
 
   get force(): boolean {
-    return core.getBooleanInput('force')
+    return getBooleanInput('force')
   }
 
   get commitChange(): boolean {
@@ -83,9 +83,11 @@ export class GitHubOptions implements Options {
   }
 
   get quotingType(): QuotingType | undefined {
-    const quotingType = core.getInput('quotingType')
+    const quotingType = getInput('quotingType')
 
-    return ['"', "'"].includes(quotingType) ? (quotingType as QuotingType) : undefined
+    return ['"', "'"].includes(quotingType)
+      ? (quotingType as QuotingType)
+      : undefined
   }
 
   get token(): string {
@@ -190,7 +192,9 @@ export class GitHubOptions implements Options {
   get method(): Method {
     const method = (getInput('method') || '').toLowerCase() as Method
 
-    if ([Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)) {
+    if (
+      [Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)
+    ) {
       return method
     }
 
@@ -230,7 +234,7 @@ export class EnvOptions implements Options {
   }
 
   get force(): boolean {
-    return process.env.FORCE === 'true'
+    return env.FORCE === 'true'
   }
 
   get commitChange(): boolean {
@@ -258,9 +262,11 @@ export class EnvOptions implements Options {
   }
 
   get quotingType(): QuotingType | undefined {
-    const quotingType = process.env.QUOTING_TYPE || ''
+    const quotingType = env.QUOTING_TYPE || ''
 
-    return ['"', "'"].includes(quotingType) ? (quotingType as QuotingType) : undefined
+    return ['"', "'"].includes(quotingType)
+      ? (quotingType as QuotingType)
+      : undefined
   }
 
   get message(): string {
