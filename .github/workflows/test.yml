@@ -31,7 +31,7 @@ jobs:
           targetBranch: main
           createPR: 'false'
           message: 'Update Image Version to v1.0.1'
-          token: ${{ secrets.GH_TOKEN }}
+#          token: ${{ secrets.GH_TOKEN }}
 
   test-no-changes-did-not-fail:
     runs-on: ubuntu-latest
@@ -66,9 +66,9 @@ jobs:
           branch: deployment/v1.2.1
           targetBranch: main
           createPR: 'false'
-          message: 'Update Image Version to v1.2.1' 
+          message: 'Update Image Version to v1.2.1'
           workDir: infrastructure
-          token: ${{ secrets.GH_TOKEN }}
+#          token: ${{ secrets.GH_TOKEN }}
 
   test-update-file:
     runs-on: ubuntu-latest
@@ -135,7 +135,7 @@ jobs:
           description: Test GitHub Action
           message: 'Update Config' 
           title: 'Bool Update on all Environments'
-          token: ${{ secrets.GH_TOKEN }}
+#          token: ${{ secrets.GH_TOKEN }}
       - uses: ./
         with:
           valueFile: '__tests__/fixtures/values.yaml'
@@ -147,7 +147,7 @@ jobs:
           description: Test GitHub Action
           message: 'Update Config' 
           title: 'Int Update on all Environments'
-          token: ${{ secrets.GH_TOKEN }}
+#          token: ${{ secrets.GH_TOKEN }}
 
   cleanup:
     runs-on: ubuntu-latest
@@ -161,5 +161,5 @@ jobs:
       - name: Delete test branches
         uses: dawidd6/action-delete-branch@v3
         with:
-          token: ${{ secrets.GH_TOKEN }}
+#          token: ${{ secrets.GH_TOKEN }}
           branches: deployment/v1.2.1,deployment/v1.0.1,deployment/test-bool-value,deployment/test-int-value,deployment/test-multi-file-update
