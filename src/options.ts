@@ -1,7 +1,7 @@
-import {getInput, getBooleanInput, warning, setFailed} from '@actions/core'
-import {env} from 'process'
-import {convertValue, parseChanges} from './helper'
-import {Committer, Changes, Method, Format, QuotingType} from './types'
+import { getInput, getBooleanInput, warning, setFailed } from '@actions/core'
+import { env } from 'process'
+import { convertValue, parseChanges } from './helper'
+import { Committer, Changes, Method, Format, QuotingType } from './types'
 
 export interface Options {
   valueFile: string
@@ -350,7 +350,9 @@ export class EnvOptions implements Options {
   get method(): Method {
     const method = (env.METHOD || '').toLowerCase() as Method
 
-    if ([Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)) {
+    if (
+      [Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)
+    ) {
       return env.METHOD as Method
     }
 
