@@ -3,7 +3,12 @@ export type Committer = {
   email: string
 }
 
-type ContentNodeUnionType = string | number | boolean | ContentNode | ContentNode[]
+type ContentNodeUnionType =
+  | string
+  | number
+  | boolean
+  | ContentNode
+  | ContentNode[]
 export type ContentNode = {
   [key: string]: ContentNodeUnionType
 }
@@ -36,7 +41,14 @@ export enum Format {
   UNKNOWN = ''
 }
 
+export type QuotingType = '"' | "'"
+
 export type FormatParser = {
   convert<T extends ContentNode>(filePath: string): T
-  dump<T extends ContentNode>(content: T, options?: {[key: string]: string | boolean | number}): string
+  dump<T extends ContentNode>(
+    content: T,
+    options?: {
+      [key: string]: undefined | string | boolean | number | QuotingType
+    }
+  ): string
 }

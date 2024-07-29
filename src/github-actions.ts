@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import {debug, info, warning, setOutput, setFailed}  from '@actions/core'
+import { debug, info, warning, setOutput, setFailed } from '@actions/core'
 
 export interface Actions {
   debug(message: string): void

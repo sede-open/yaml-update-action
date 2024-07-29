@@ -1,7 +1,7 @@
-import {getInput, getBooleanInput, warning, setFailed} from '@actions/core'
-import {env} from 'process'
-import {convertValue, parseChanges} from './helper'
-import {Committer, Changes, Method, Format} from './types'
+import { getInput, getBooleanInput, warning, setFailed } from '@actions/core'
+import { env } from 'process'
+import { convertValue, parseChanges } from './helper'
+import { Committer, Changes, Method, Format, QuotingType } from './types'
 
 export interface Options {
   valueFile: string
@@ -11,6 +11,7 @@ export interface Options {
   commitChange: boolean
   updateFile: boolean
   branch: string
+  force: boolean
   masterBranchName: string
   message: string
   title: string
@@ -29,6 +30,7 @@ export interface Options {
   format: Format
   method: Method
   noCompatMode: boolean
+  quotingType?: QuotingType
 }
 
 export class GitHubOptions implements Options {
@@ -46,6 +48,10 @@ export class GitHubOptions implements Options {
 
   get branch(): string {
     return getInput('branch')
+  }
+
+  get force(): boolean {
+    return getBooleanInput('force')
   }
 
   get commitChange(): boolean {
@@ -74,6 +80,14 @@ export class GitHubOptions implements Options {
 
   get noCompatMode(): boolean {
     return getBooleanInput('noCompatMode')
+  }
+
+  get quotingType(): QuotingType | undefined {
+    const quotingType = getInput('quotingType')
+
+    return ['"', "'"].includes(quotingType)
+      ? (quotingType as QuotingType)
+      : undefined
   }
 
   get token(): string {
@@ -178,7 +192,9 @@ export class GitHubOptions implements Options {
   get method(): Method {
     const method = (getInput('method') || '').toLowerCase() as Method
 
-    if ([Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)) {
+    if (
+      [Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)
+    ) {
       return method
     }
 
@@ -217,6 +233,10 @@ export class EnvOptions implements Options {
     return env.MASTER_BRANCH_NAME || ''
   }
 
+  get force(): boolean {
+    return env.FORCE === 'true'
+  }
+
   get commitChange(): boolean {
     return env.COMMIT_CHANGE === 'true'
   }
@@ -239,6 +259,14 @@ export class EnvOptions implements Options {
 
   get noCompatMode(): boolean {
     return env.NO_COMPAT_MODE === 'true'
+  }
+
+  get quotingType(): QuotingType | undefined {
+    const quotingType = env.QUOTING_TYPE || ''
+
+    return ['"', "'"].includes(quotingType)
+      ? (quotingType as QuotingType)
+      : undefined
   }
 
   get message(): string {
@@ -322,7 +350,9 @@ export class EnvOptions implements Options {
   get method(): Method {
     const method = (env.METHOD || '').toLowerCase() as Method
 
-    if ([Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)) {
+    if (
+      [Method.CreateOrUpdate, Method.Create, Method.Update].includes(method)
+    ) {
       return env.METHOD as Method
     }
 

@@ -15,6 +15,10 @@ inputs:
     required: false
     description: 'Removes quotes from reserved words, like Y, N, yes, no, on, etc.'
     default: 'false'
+  quotingType:
+    required: false
+    description: QuotingType for YAML conversion, possible values are ' and ". Defaults to single quotes
+    default: "'"
   format:
     required: false
     description: 'Supported file formats, possible values are YAML and JSON, will be guessed by file extension if not provided. Falls back to YAML'
@@ -28,6 +32,10 @@ inputs:
     required: false
     description: 'Branch to commit the change, will be created if not exist'
     default: 'master'
+  force:
+    required: false
+    description: 'Branch to commit the change, will be created if not exist'
+    default: 'false'
   masterBranchName:
     required: false
     description: 'Branch name of your master'
@@ -101,5 +109,5 @@ inputs:
     required: false
     default: ''
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'

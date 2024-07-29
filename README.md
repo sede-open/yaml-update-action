@@ -93,6 +93,7 @@ jobs:
 | format       | Specify the used format parser of your file. WIll be guessed by file extension if not provided and uses YAML as fallback. Supports `YAML` and `JSON`                                                                                                                            |                                           |
 | method       | Configures the processing of none existing properties. Possible values: `CreateOrUpdate`, `Update`, `Create`                                                                                                                                                                    | `CreateOrUpdate`                          |
 | noCompatMode | Removes quotes from reserved words, like Y, N, yes, no, on, etc.                                                                                                                                                                                                                | `false`                                   |
+| quotingType | used quotes for string values in YAML output                                                                                                                                                                                                               | `'`                                   |
 
 #### Methods
 
@@ -111,12 +112,14 @@ Determine the behavior for none existing properties or array elements.
 | commitChange     | Commit the change to __branch__ with the given __message__                                                                                                                                                       | `true`                                                |
 | message          | Commit message for the changed YAML file                                                                                                                                                                         | ''                                                    |
 | labels           | Comma separated list of labels, e.g. "feature, yaml-updates"                                                                                                                                                     | 'yaml-updates'                                        |
-| createPR         | Create a PR from __branch__ to __targetBranch__. Use 'true' to enable it                                                                                                                                         | `true`                                                |
+| createPR         | Create a PR from __branch__ to __targetBranch__. Use 'true' to enable it                                                                                                                                         | `false`                                                |
 | title            | Custom title for the created Pull Request                                                                                                                                                                        | 'Merge: {{message}}'                                  |
 | description      | Custom description for the created Pull Request                                                                                                                                                                  | ''                                                    |
 | targetBranch     | Opens a PR from __branch__ to __targetBranch__  if createPR is set to 'true'                                                                                                                                     | `master`                                              |
 | repository       | The Repository where the YAML file is located and should be updated. You have to checkout this repository too and set the working-directory for this action to the same as the repository. See the example below | ${{github.repository}}                                |
 | branch           | The updated YAML file will be committed to this branch, branch will be created if not exists                                                                                                                     | `master`                                              |
+| force            | Allows force pushes                                                                                                                                                                                              | `false`                                               |
+| masterBranchName | Branch name of your master branch                                                                                                                                                                                | `master`                                              |
 | masterBranchName | Branch name of your master branch                                                                                                                                                                                | `master`                                              |
 | githubAPI        | BaseURL for all GitHub REST API requests                                                                                                                                                                         | https://api.github.com                                |
 | token            | GitHub API Token which is used to create the PR, have to have right permissions for the selected repository                                                                                                      | ${{github.token}}                                     |
@@ -198,7 +201,36 @@ jobs:
             }
 ```
 
-### Advaned Example with an separate target repository
+### Change a YAML Multifile
+
+Yaml supports multiple documents in a single file separated by `---`.
+To update such a file, start the property path with the index of the document to be changed.
+
+```yaml
+jobs:
+  test-multifile-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'deployment/helm/values.yaml'
+          branch: deployment/v1.0.1
+          targetBranch: main
+          createPR: 'true'
+          description: Test GitHub Action
+          message: 'Update Images'
+          title: 'Version Updates '
+          changes: |
+            {
+              "__tests__/fixtures/multivalue.yaml": {
+                "[0].backend.version": "v1.1.0",
+                "[1].containers[1].image": "node:alpine"
+              }
+            }
+```
+
+### Advanced Example with an separate target repository
 
 ```yaml
 env:
